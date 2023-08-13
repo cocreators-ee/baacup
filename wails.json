@@ -1,0 +1,19 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "baacup",
+  "outputfilename": "baacup",
+  "frontend:install": "pnpm install",
+  "frontend:build": "pnpm run build",
+  "frontend:dev:watcher": "pnpm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "Cocreators OÜ",
+    "email": "baacup@cocreators.ee"
+  },
+  "info": {
+    "companyName": "Cocreators OÜ",
+    "productName": "Baacup - Backup your savegames",
+    "productVersion": "1.0.0",
+    "copyright": "Cocreators OÜ"
+  }
+}
