@@ -48,3 +48,14 @@ repos:
         entry: pnpm run --dir frontend eslint
         language: system
         pass_filenames: false
+  - repo: https://github.com/lietu/go-pre-commit
+    rev: master
+    hooks:
+      - id: errcheck
+      - id: go-fmt-goimports
+      - id: go-test
+      - id: go-vet
+      - id: gofumpt
+      - id: golint
+      - id: staticcheck
+      - id: go-mod-tidy
