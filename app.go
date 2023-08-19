@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"runtime"
 	"sort"
@@ -65,15 +64,15 @@ func (a *App) ensurePath(createPath string) {
 }
 
 func (a *App) getConfigPath() string {
-	return path.Join(a.BasePath, "config.yaml")
+	return filepath.Join(a.BasePath, "config.yaml")
 }
 
 func (a *App) getBackupsPath() string {
-	return path.Join(a.BasePath, "backups")
+	return filepath.Join(a.BasePath, "backups")
 }
 
 func (a *App) getRulesPath() string {
-	return path.Join(a.BasePath, "rules")
+	return filepath.Join(a.BasePath, "rules")
 }
 
 // LoadConfig loads or reload the application configuration
@@ -171,7 +170,7 @@ func (a *App) loadRules() map[string]ActiveRule {
 	platform := getPlatform()
 
 	rulesPath := a.getRulesPath()
-	rulesFiles, err := filepath.Glob(path.Join(rulesPath, "*.yaml"))
+	rulesFiles, err := filepath.Glob(filepath.Join(rulesPath, "*.yaml"))
 	if err != nil {
 		panic(err)
 	}
@@ -180,7 +179,7 @@ func (a *App) loadRules() map[string]ActiveRule {
 	for _, rulesFile := range rulesFiles {
 		rule := &Rule{}
 
-		name := strings.TrimSuffix(path.Base(rulesFile), ".yaml")
+		name := strings.TrimSuffix(filepath.Base(rulesFile), ".yaml")
 
 		contents, err := os.ReadFile(rulesFile)
 		if err != nil {
@@ -340,18 +339,18 @@ func (a *App) backupFile(ruleFilename string, sourcePath string) {
 	}
 
 	wailsRuntime.EventsEmit(a.ctx, "backupsUpdated", a.Backups)
-	a.AddEvent(fmt.Sprintf("Backed up %s savegame %s", rule.Name, path.Base(sourcePath)))
+	a.AddEvent(fmt.Sprintf("Backed up %s savegame %s", rule.Name, filepath.Base(sourcePath)))
 }
 
 // DeleteBackup deletes a specific backup
 func (a *App) DeleteBackup(ruleFilename string, filename string) {
 	// Figure out filenames
-	backupPath := path.Join(a.getBackupsPath(), ruleFilename)
-	baseNoExt := strings.TrimSuffix(filename, path.Ext(filename))
+	backupPath := filepath.Join(a.getBackupsPath(), ruleFilename)
+	baseNoExt := strings.TrimSuffix(filename, filepath.Ext(filename))
 	metaFilename := fmt.Sprintf("%s.baacup.yaml", baseNoExt)
 
-	filePath := path.Join(backupPath, filename)
-	metaPath := path.Join(backupPath, metaFilename)
+	filePath := filepath.Join(backupPath, filename)
+	metaPath := filepath.Join(backupPath, metaFilename)
 
 	a.tryDeleteFile(filePath)
 	a.tryDeleteFile(metaPath)
@@ -380,9 +379,9 @@ func (a *App) tryDeleteFile(filePath string) {
 
 func (a *App) makeBackup(ruleFilename string, meta BackupMetadata) (BackupMetadata, error) {
 	// Figure out filenames
-	backupPath := path.Join(a.getBackupsPath(), ruleFilename)
-	ext := path.Ext(meta.Source)
-	baseNoExt := strings.TrimSuffix(path.Base(meta.Source), ext)
+	backupPath := filepath.Join(a.getBackupsPath(), ruleFilename)
+	ext := filepath.Ext(meta.Source)
+	baseNoExt := strings.TrimSuffix(filepath.Base(meta.Source), ext)
 	timestamp := meta.BackupTime.Format("2006-01-02T150405.000")
 
 	backupFilename := fmt.Sprintf("%s-%s%s", baseNoExt, timestamp, ext)
@@ -398,7 +397,7 @@ func (a *App) makeBackup(ruleFilename string, meta BackupMetadata) (BackupMetada
 	}
 
 	// Write metadata file
-	metaFile := path.Join(backupPath, metaFilename)
+	metaFile := filepath.Join(backupPath, metaFilename)
 	data, err := yaml.Marshal(meta)
 	if err != nil {
 		a.ReportError(fmt.Errorf("error writing backup metadata to %s", metaFile))
@@ -412,7 +411,7 @@ func (a *App) makeBackup(ruleFilename string, meta BackupMetadata) (BackupMetada
 	}
 
 	// Make the copy of the file
-	backupDst := path.Join(backupPath, backupFilename)
+	backupDst := filepath.Join(backupPath, backupFilename)
 	err = copyFile(meta.Source, backupDst)
 
 	return meta, err
@@ -468,7 +467,7 @@ func (a *App) RestoreBackup(ruleFilename string, filename string) bool {
 	}
 
 	dst := metadata.Source
-	src := path.Join(a.getBackupsPath(), ruleFilename, filename)
+	src := filepath.Join(a.getBackupsPath(), ruleFilename, filename)
 
 	err := copyFile(src, dst)
 	if err != nil {
@@ -561,7 +560,7 @@ func (a *App) CheckRules() {
 }
 
 func (a *App) findBackupMetadata(ruleFilename string) []BackupMetadata {
-	backupPath := path.Join(a.getBackupsPath(), ruleFilename)
+	backupPath := filepath.Join(a.getBackupsPath(), ruleFilename)
 	backups := []BackupMetadata{}
 
 	// Read directory contents
@@ -579,7 +578,7 @@ func (a *App) findBackupMetadata(ruleFilename string) []BackupMetadata {
 		}
 
 		filename := file.Name()
-		filePath := path.Join(backupPath, filename)
+		filePath := filepath.Join(backupPath, filename)
 
 		// We're only interested in metadata
 		if !strings.HasSuffix(filePath, ".baacup.yaml") {
@@ -605,7 +604,7 @@ func (a *App) findBackupMetadata(ruleFilename string) []BackupMetadata {
 		}
 
 		base := strings.TrimSuffix(filename, ".baacup.yaml")
-		ext := path.Ext(meta.Source)
+		ext := filepath.Ext(meta.Source)
 		backupFilename := fmt.Sprintf("%s%s", base, ext)
 		meta.Filename = backupFilename
 

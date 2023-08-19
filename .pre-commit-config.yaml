@@ -7,12 +7,14 @@ repos:
       - id: trailing-whitespace
         exclude: |
           (?x)(
+            ^.*/wailsjs/.*$|
             ^.*/vendor/.*$|
             ^NOT-EXISTING-LAST-ENTRY$
           )
       - id: end-of-file-fixer
         exclude: |
           (?x)(
+            ^.*/wailsjs/.*$|
             ^.*/vendor/.*$|
             ^NOT-EXISTING-LAST-ENTRY$
           )
@@ -37,6 +39,7 @@ repos:
           - prettier-plugin-svelte@2.7.0
         exclude: |
           (?x)(
+            ^.*/wailsjs/.*$|
             ^.*/vendor/.*$|
             /pnpm-lock.yaml$|
             ^NOT-EXISTING-LAST-ENTRY$

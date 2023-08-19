@@ -1,13 +1,13 @@
 export namespace main {
-
+	
 	export class BackupConfig {
 	    keepSaves: number;
 	    maxMBPerGame: number;
-
+	
 	    static createFrom(source: any = {}) {
 	        return new BackupConfig(source);
 	    }
-
+	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.keepSaves = source["keepSaves"];
@@ -17,11 +17,11 @@ export namespace main {
 	export class CompactionConfig {
 	    keepSaves: number;
 	    compactAfterDays: number;
-
+	
 	    static createFrom(source: any = {}) {
 	        return new CompactionConfig(source);
 	    }
-
+	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.keepSaves = source["keepSaves"];
@@ -36,11 +36,11 @@ export namespace main {
 	    // Go type: time
 	    rulesLastUpdated: any;
 	    rulesAutoUpdate: boolean;
-
+	
 	    static createFrom(source: any = {}) {
 	        return new Config(source);
 	    }
-
+	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.disabledRules = source["disabledRules"];
@@ -50,7 +50,7 @@ export namespace main {
 	        this.rulesLastUpdated = this.convertValues(source["rulesLastUpdated"], null);
 	        this.rulesAutoUpdate = source["rulesAutoUpdate"];
 	    }
-
+	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
 		    if (!a) {
 		        return a;
@@ -72,11 +72,11 @@ export namespace main {
 	export class Monitor {
 	    path: string;
 	    ruleFilename: string;
-
+	
 	    static createFrom(source: any = {}) {
 	        return new Monitor(source);
 	    }
-
+	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.path = source["path"];
@@ -85,3 +85,4 @@ export namespace main {
 	}
 
 }
+

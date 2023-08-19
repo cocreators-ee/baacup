@@ -3,6 +3,8 @@
 package main
 
 import (
+	"path/filepath"
+
 	"golang.org/x/sys/windows"
 )
 
@@ -11,9 +13,13 @@ func getPlatform() string {
 }
 
 func getBasePath() string {
-	path, err := windows.KnownFolderPath(windows.FOLDERID_Documents, 0)
+	myDocuments, err := windows.KnownFolderPath(windows.FOLDERID_Documents, 0)
 	if err != nil {
 		panic(err)
 	}
-	return path
+
+	// Save this so we can reference it in rules
+	os.SetEnv("MyDocuments", myDocuments)
+
+	return filepath.Join(myDocuments, "Baacup")
 }

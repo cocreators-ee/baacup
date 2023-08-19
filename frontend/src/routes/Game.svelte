@@ -181,7 +181,8 @@
           <!-- // @formatter:off -->
           {@const parts = monitor.split(pathSeparator)}
           <li>
-            {#each parts as part, i}{part}{i === parts.length - 1 ? "" : "/"}<wbr />{/each}
+            {#each parts as part, i}{part}{i === parts.length - 1 ? "" : pathSeparator}<wbr
+              />{/each}
           </li>
           <!-- // @formatter:on -->
         {/each}
