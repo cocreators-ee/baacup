@@ -8,6 +8,7 @@ repos:
         exclude: |
           (?x)(
             ^.*/wailsjs/.*$|
+            ^.*/package.json.md5$|
             ^.*/vendor/.*$|
             ^NOT-EXISTING-LAST-ENTRY$
           )
@@ -15,6 +16,7 @@ repos:
         exclude: |
           (?x)(
             ^.*/wailsjs/.*$|
+            ^.*/package.json.md5$|
             ^.*/vendor/.*$|
             ^NOT-EXISTING-LAST-ENTRY$
           )
@@ -40,6 +42,7 @@ repos:
         exclude: |
           (?x)(
             ^.*/wailsjs/.*$|
+            ^.*/package.json.md5$|
             ^.*/vendor/.*$|
             /pnpm-lock.yaml$|
             ^NOT-EXISTING-LAST-ENTRY$
