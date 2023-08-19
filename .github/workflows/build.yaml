@@ -29,6 +29,7 @@ jobs:
 
           sudo apt-get update
           sudo apt-get install -y \
+            jq \
             libgtk-3-dev \
             libwebkit2gtk-4.0-dev \
             nsis \
@@ -37,10 +38,20 @@ jobs:
           wails doctor
 
       - name: Prepare things
+        id: prepare
         run: |
           mkdir artifacts
           cd frontend
           pnpm install
+
+          # Extract version from tag
+          VERSION=$(git tag --points-at HEAD | head -n1)
+          if [[ "$VERSION" != "" ]]; then
+            jq '.info.productVersion = "'${VERSION}'"' < wails.json > wails.json.new
+            mv wails.json.new wails.json
+          fi
+
+          echo $VERSION >> $GITHUB_OUTPUT
 
       - name: Build for Linux amd64
         run: |
@@ -61,6 +72,8 @@ jobs:
       - name: Installer for Windows amd64
         run: |
           wails build --platform windows/amd64 --nsis
+          ls -lha bin
+          ls -lha bin/*
           # cp -a build/bin/baacup.exe artifacts/baacup-windows-amd64-installer.exe
 
       - name: Build for Windows arm64
