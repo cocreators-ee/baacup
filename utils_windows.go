@@ -3,6 +3,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 
 	"golang.org/x/sys/windows"
@@ -19,7 +20,7 @@ func getBasePath() string {
 	}
 
 	// Save this so we can reference it in rules
-	os.SetEnv("MyDocuments", myDocuments)
+	os.Setenv("MyDocuments", myDocuments)
 
 	return filepath.Join(myDocuments, "Baacup")
 }
