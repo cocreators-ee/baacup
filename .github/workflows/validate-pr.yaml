@@ -1,0 +1,31 @@
+name: Validate Pull Request
+
+on:
+  push:
+    branches:
+      - "main"
+  pull_request:
+    types: [opened, synchronize, edited]
+
+jobs:
+  Validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: "3.10"
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: ">=1.20.0"
+
+      - name: Install tools
+        run: |
+          pip install pre-commit
+          go install github.com/lietu/go-pre-commit@latest
+
+      - name: Run pre-commit
+        run: pre-commit run --all-files || exit 1

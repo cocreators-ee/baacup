@@ -13,6 +13,9 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.1",
     "@tsconfig/svelte": "^3.0.0",
+    "@types/node": "^20.5.0",
+    "carbon-components-svelte": "^0.79.0",
+    "carbon-icons-svelte": "^12.1.0",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.27.5",
@@ -27,6 +30,10 @@
     "vite": "^3.0.7"
   },
   "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.3.0"
+    "@fontsource-variable/jetbrains-mono": "^5.0.9",
+    "@fontsource-variable/montserrat": "^5.0.9",
+    "@typescript-eslint/eslint-plugin": "^6.3.0",
+    "carbon-components": "^10.58.8",
+    "sass": "^1.66.0"
   }
 }

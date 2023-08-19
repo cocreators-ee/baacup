@@ -1,78 +1,160 @@
 <script lang="ts">
-  import { Greet } from "../wailsjs/go/main/App.js"
+  import { Column, Grid, Loading, Row } from "carbon-components-svelte"
 
-  import logo from "./assets/images/logo-universal.png"
+  import { hash } from "./router"
+  import Game from "./routes/Game.svelte"
+  import Home from "./routes/Home.svelte"
+  import { activeRuleStore, configStore, ruleStore } from "./state"
+  import { formatDateTime, formatNumber } from "./utils.js"
 
-  let resultText: string = "Please enter your name below 👇"
-  let name: string
-
-  function greet(): void {
-    Greet(name).then((result) => (resultText = result))
+  const routes = {
+    "": Home,
+    Game: Game,
   }
+
+  $: view = routes[$hash.split("/")[0]]
 </script>
 
 <main>
-  <img alt="Wails logo" id="logo" src={logo} />
-  <div class="result" id="result">{resultText}</div>
-  <div class="input-box" id="input">
-    <input autocomplete="off" bind:value={name} class="input" id="name" type="text" />
-    <button class="btn" on:click={greet}>Greet</button>
-  </div>
+  {#if $configStore === undefined}
+    <Loading />
+  {:else}
+    <Grid>
+      <Row noGutter>
+        <Column md={3} noGutter>
+          <div class="sidebar">
+            <div class="logo">
+              <a href="#"> Baacup </a>
+            </div>
+            <div>
+              <h2>Now playing</h2>
+              <div class="now-playing">
+                {#if Object.keys($activeRuleStore).length > 0}
+                  {#each Object.keys($activeRuleStore) as rule}
+                    {@const activeRule = $activeRuleStore[rule]}
+                    <a href={`#Game/${rule}`}>{activeRule.name}</a>
+                  {/each}
+                {:else}
+                  <p>No games detected...</p>
+                {/if}
+              </div>
+            </div>
+            <div class="grow">&nbsp;</div>
+            <div class="footer">
+              <div>
+                <p>Rules last updated</p>
+                <p>{formatDateTime($configStore.rulesLastUpdated)}</p>
+                <p>{formatNumber(Object.keys($ruleStore).length)} rules loaded</p>
+              </div>
+              <div>
+                <em>Baacup: Backup your savegames</em>
+              </div>
+            </div>
+          </div>
+        </Column>
+        <Column md={5} noGutter>
+          <div class="main">
+            <svelte:component this={view} />
+          </div>
+        </Column>
+      </Row>
+    </Grid>
+  {/if}
 </main>
 
-<style>
-  #logo {
-    display: block;
-    width: 50%;
-    height: 50%;
-    margin: auto;
-    padding: 10% 0 0;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-    background-origin: content-box;
+<style lang="scss">
+  @import "setup";
+
+  :global(main > .bx--grid) {
+    padding: 0;
   }
 
-  .result {
-    height: 20px;
-    line-height: 20px;
-    margin: 1.5rem auto;
+  :global(main > .bx--grid > .bx--row) {
+    margin: 0;
   }
 
-  .input-box .btn {
-    width: 60px;
-    height: 30px;
-    line-height: 30px;
-    border-radius: 3px;
-    border: none;
-    margin: 0 0 0 20px;
-    padding: 0 8px;
-    cursor: pointer;
+  .main {
+    display: flex;
+    flex-direction: column;
   }
 
-  .input-box .btn:hover {
-    background-image: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
-    color: #333333;
-  }
+  .sidebar {
+    position: fixed;
+    width: inherit;
+    max-width: inherit;
 
-  .input-box .input {
-    border: none;
-    border-radius: 3px;
-    outline: none;
-    height: 30px;
-    line-height: 30px;
-    padding: 0 10px;
-    background-color: rgba(240, 240, 240, 1);
-    -webkit-font-smoothing: antialiased;
-  }
+    display: flex;
+    padding: 32px 16px 32px 32px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    flex-shrink: 0;
+    margin: 0 0 0 -1rem;
 
-  .input-box .input:hover {
-    border: none;
-    background-color: rgba(255, 255, 255, 1);
-  }
+    //background: $color-secondary-1-4;
+    height: 100vh;
 
-  .input-box .input:focus {
-    border: none;
-    background-color: rgba(255, 255, 255, 1);
+    background: conic-gradient(from 270deg at 100% -0%, $color-secondary-1-4 0deg, #3f0c23 310deg);
+
+    .logo {
+      a {
+        color: $color-complement-1;
+        text-decoration: none;
+      }
+      text-align: center;
+      text-shadow: 0px 0px 4px lighten($color-complement-1, 30%);
+      font-size: 48px;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: 0.96px;
+      width: 100%;
+    }
+
+    h2 {
+      font-size: $spacing-2xl;
+      font-style: normal;
+      font-weight: 700;
+      line-height: normal;
+      letter-spacing: 0.64px;
+    }
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-md;
+
+      &.grow {
+        flex-grow: 1;
+      }
+
+      &.footer {
+        width: 100%;
+        text-align: center;
+        letter-spacing: 0.32px;
+
+        p,
+        em {
+          font-size: 14px;
+        }
+
+        em {
+          text-align: center;
+          font-style: italic;
+          font-weight: 700;
+          line-height: normal;
+          letter-spacing: 0.32px;
+        }
+      }
+    }
+
+    .now-playing {
+      padding-left: $spacing-lg;
+      gap: $spacing-md;
+
+      p {
+        font-style: italic;
+      }
+    }
   }
 </style>

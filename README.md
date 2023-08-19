@@ -16,13 +16,31 @@ the game.
 Baacup supports Windows, Linux, and MacOS, and relies on community-driven rules to know what files
 to back up, and provides an interface for you to easily restore back to a previous version.
 
+## Status
+
+The software is currently in an early stage.
+
+- It looks ugly
+- The core logic seems to kinda work
+- It can make backups based on rules
+- It can maybe restore backups without data loss
+- It can read the config
+- It supports the `backups.keep_saves` option
+- It does not support any of the other configuration options
+- There is no way to configure the application from the GUI
+- There has been very little testing in general
+- Data loss is possible, though we try to avoid it
+- You have to manually download the rules from
+  [cocreators-ee/baacup-rules](https://github.com/cocreators-ee/baacup-rules) or create them
+  yourself
+
 ## Data files
 
 The data files for Baacup will be stored under the appropriate `BASE_PATH` depending on the
 platform:
 
-- For \*nix: $HOME/Baacup
-- For Windows: My Documents\Baacup
+- For \*nix: `$HOME/Baacup`
+- For Windows: `My Documents\Baacup`
 
 ### Rules
 
@@ -36,18 +54,27 @@ platforms:
   windows:
     executable: *\\bg2.exe
     savegames:
-      - %LOCALAPPDATA%\\SomePublisher\\BG2\\quicksave.sav
-      - %LOCALAPPDATA%\\SomePublisher\\BG2\\autosave.sav
-      - %LOCALAPPDATA%\\SomePublisher\\BG2\\saves\\*.sav
+      - ${LOCALAPPDATA}\\SomePublisher\\BG2\\quicksave.sav
+      - ${LOCALAPPDATA}\\SomePublisher\\BG2\\autosave.sav
+      - ${LOCALAPPDATA}\\SomePublisher\\BG2\\saves\\*.sav
   linux:
     executable: */bg2.bin
     savegames:
-      - $HOME/.local/savegames/BG2/*.sav
+      - ${HOME}/.local/savegames/BG2/*.sav
   macos:
     executable: */bin/bg2
     savegames:
-      - $HOME/Save Games/Baldur's Gate 2/*.macsav
+      - ${HOME}/Save Games/Baldur's Gate 2/*.macsav
 ```
+
+You can create these files manually if you want, but we'd prefer you then contribute them to
+[cocreators-ee/baacup-rules](https://github.com/cocreators-ee/baacup-rules) for the rest of the
+community to benefit from them as well.
+
+If you want to manually get the community-published rules, you can
+[download them from cocreators-ee/baacup-rules](https://github.com/cocreators-ee/baacup-rules/archive/refs/heads/main.zip)
+and then copy the contents of the `rules` folder in the archive to the "rules" path under the data
+file directory as explained above.
 
 ### Config
 
@@ -57,7 +84,7 @@ Contains the following:
 
 ```yaml
 disabled_rules:
-  - {game}-{variant}.yaml
+  - "{game}-{variant}.yaml"
 backups:
   keep_saves: 50
   max_mb_per_game: 500
@@ -80,20 +107,32 @@ The `yaml` metadata will look like this:
 ```yaml
 source: /full/path/to/file/source.sav
 backup_time: RFC 3339 timestamp
-sha256_hash: SHA256 hash of the file contents
+last_modified: RFC 3339 timestamp
 ```
 
 ## Development
 
-Built with [Wails](https://wails.io/). You will need Go 1.20+, Node 18+, and Pnpm 8.6.0+ to work on
-this code.
+Built with [Wails](https://wails.io/) and [Svelte](https://svelte.dev). You will need the following
+installed:
+
+- [Wails](https://wails.io/docs/gettingstarted/installation)
+- [Go 1.20+](https://go.dev/dl/)
+- [Node 18+ (likely LTS)](https://nodejs.org/en)
+- [Pnpm 8.6.0+](https://pnpm.io/installation)
+- [go-pre-commit](https://github.com/lietu/go-pre-commit#using-the-hooks)
+- [pre-commit](https://pre-commit.com/#install)
+
+## Design
+
+Before implementation we'd like to have a design. Current draft is on
+[Figma](https://www.figma.com/file/7UrzEb3GO1o4jJ7i1WauEO/Baacup?type=design&node-id=11%3A93).
 
 ## Live Development
 
-To run in live development mode, run `wails dev` in the project directory. This will run a Vite
-development server that will provide very fast hot reload of your frontend changes. If you want to
-develop in a browser and have access to your Go methods, there is also a dev server that runs on
-http://localhost:34115. Connect to this in your browser, and you can call your Go code from
+To run in live development mode, run `wails dev -loglevel Info` in the project directory. This will
+run a Vite development server that will provide very fast hot reload of your frontend changes. If
+you want to develop in a browser and have access to your Go methods, there is also a dev server that
+runs on http://localhost:34115. Connect to this in your browser, and you can call your Go code from
 devtools.
 
 ## Building
