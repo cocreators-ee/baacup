@@ -41,18 +41,20 @@ jobs:
         id: prepare
         run: |
           mkdir artifacts
-          cd frontend
-          pnpm install
 
           # Extract version from tag
           VERSION=$(git tag --points-at HEAD | head -n1)
           if [[ "$VERSION" != "" ]]; then
             jq '.info.productVersion = "'${VERSION}'"' < wails.json > wails.json.new
             mv wails.json.new wails.json
+
+            echo $VERSION >> $GITHUB_OUTPUT
+            echo "Release $VERSION of ${{ github.sha }}" > artifacts/Release.txt
           fi
 
-          echo $VERSION >> $GITHUB_OUTPUT
-          echo ${{ github.sha }} > artifacts/Release.txt
+          cd frontend
+          pnpm install
+          cd -
 
       - name: Build for Linux amd64
         run: |
