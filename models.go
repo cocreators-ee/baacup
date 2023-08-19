@@ -38,6 +38,7 @@ type RulePlatform struct {
 // Rule for how to manage a game
 type Rule struct {
 	Name      string                  `yaml:"name" json:"name"`
+	Issues    string                  `yaml:"issues" json:"issues"`
 	Platforms map[string]RulePlatform `yaml:"platforms" json:"platforms"`
 }
 
@@ -45,6 +46,7 @@ type Rule struct {
 type ActiveRule struct {
 	RuleFilename   string       `json:"ruleFilename"`
 	Name           string       `json:"name"`
+	Issues         string       `yaml:"issues" json:"issues"`
 	Platform       RulePlatform `json:"platform"`
 	executableGlob glob.Glob
 }

@@ -140,6 +140,7 @@ func (a *App) preprocessRules(rules map[string]ActiveRule) map[string]ActiveRule
 		newRules[key] = ActiveRule{
 			RuleFilename: rule.RuleFilename,
 			Name:         rule.Name,
+			Issues:       rule.Issues,
 			Platform: RulePlatform{
 				Executable: rule.Platform.Executable,
 				Savegames:  savegames,
@@ -203,6 +204,7 @@ func (a *App) loadRules() map[string]ActiveRule {
 
 		activeRules[name] = ActiveRule{
 			RuleFilename: name,
+			Issues:       rule.Issues,
 			Name:         rule.Name,
 			Platform:     rulePlatform,
 		}

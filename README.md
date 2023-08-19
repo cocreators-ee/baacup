@@ -50,6 +50,7 @@ Contains the following:
 
 ```yaml
 name: Baldur's Gate 2
+issues: Optional explanation of any issues with these rules.
 platforms:
   windows:
     executable: *\\bg2.exe

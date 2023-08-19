@@ -20,6 +20,7 @@ type RulePlatform = {
 
 export type ActiveRule = {
   ruleFilename: string
+  issues: string
   name: string
   platform: RulePlatform
 }

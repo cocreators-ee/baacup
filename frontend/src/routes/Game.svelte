@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Loading } from "carbon-components-svelte"
+  import { Button, InlineNotification, Loading } from "carbon-components-svelte"
   import Checkmark from "carbon-icons-svelte/lib/Checkmark.svelte"
   import Restart from "carbon-icons-svelte/lib/Restart.svelte"
 
@@ -174,6 +174,14 @@
   </Title>
 
   <article>
+    {#if rule.issues}
+      <InlineNotification
+        lowContrast
+        kind="error"
+        title="Warning - potential issues reported"
+        subtitle={rule.issues}
+      />
+    {/if}
     <section class="monitoring">
       <h2>Monitoring</h2>
       <ul class="monitors">
