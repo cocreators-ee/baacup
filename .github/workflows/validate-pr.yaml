@@ -34,10 +34,15 @@ jobs:
         run: |
           mkdir -p frontend/dist
           touch frontend/dist/blah.txt
+
           pip install pre-commit
           go install github.com/lietu/go-pre-commit@latest
           go install github.com/kisielk/errcheck@latest
           go install honnef.co/go/tools/cmd/staticcheck@latest
+
+          cd frontend
+          pnpm install
+          pnpm add -g eslint
 
       - name: Run pre-commit
         run: pre-commit run --all-files || exit 1
