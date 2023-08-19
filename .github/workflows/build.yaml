@@ -72,10 +72,7 @@ jobs:
       - name: Installer for Windows amd64
         run: |
           wails build --platform windows/amd64 --nsis
-          ls -lha build
-          ls -lha build/*
-          ls -lha build/bin/*
-          # cp -a build/bin/baacup.exe artifacts/baacup-windows-amd64-installer.exe
+          cp -a build/bin/baacup-amd64-installer.exe artifacts/baacup-amd64-installer.exe
 
       - name: Build for Windows arm64
         run: |
@@ -85,7 +82,7 @@ jobs:
       - name: Installer for Windows arm64
         run: |
           wails build --platform windows/arm64 --nsis
-          # cp -a build/bin/baacup.exe artifacts/baacup-windows-arm64-installer.exe
+          cp -a build/bin/baacup-arm64-installer.exe artifacts/baacup-arm64-installer.exe
 
       # TODO: macOS build
 
