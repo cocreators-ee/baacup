@@ -72,8 +72,9 @@ jobs:
       - name: Installer for Windows amd64
         run: |
           wails build --platform windows/amd64 --nsis
-          ls -lha bin
-          ls -lha bin/*
+          ls -lha build
+          ls -lha build/*
+          ls -lha build/bin/*
           # cp -a build/bin/baacup.exe artifacts/baacup-windows-amd64-installer.exe
 
       - name: Build for Windows arm64
