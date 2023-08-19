@@ -16,6 +16,8 @@ the game.
 Baacup supports Windows, Linux, and MacOS, and relies on community-driven rules to know what files
 to back up, and provides an interface for you to easily restore back to a previous version.
 
+![Screenshot of Baacup](./screenshot.png?raw=true "Screenshot of Baacup")
+
 ## Status
 
 The software is currently in an early stage.

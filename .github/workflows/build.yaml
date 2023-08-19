@@ -50,7 +50,8 @@ jobs:
             jq '.info.productVersion = "'${VERSION}'"' < wails.json > wails.json.new
             mv wails.json.new wails.json
 
-            echo "Release $VERSION of ${{ github.sha }}" > artifacts/Release.txt
+            echo "Release $VERSION of ${{ github.sha }}" > RELEASE.txt
+            echo >> RELEASE.txt
           fi
 
           cd frontend
@@ -102,4 +103,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
+          body_path: RELEASE.txt
           files: artifacts/*
