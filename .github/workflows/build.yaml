@@ -50,7 +50,6 @@ jobs:
             jq '.info.productVersion = "'${VERSION}'"' < wails.json > wails.json.new
             mv wails.json.new wails.json
 
-            echo $VERSION >> $GITHUB_OUTPUT
             echo "Release $VERSION of ${{ github.sha }}" > artifacts/Release.txt
           fi
 
