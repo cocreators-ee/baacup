@@ -9,8 +9,8 @@ import (
 
 // BackupConfig stores configuration for how to handle backups
 type BackupConfig struct {
-	KeepSaves    int `yaml:"keep_saves" json:"keepSaves"`
-	MaxMBPerGame int `yaml:"max_mb_per_game" json:"maxMBPerGame"`
+	KeepSaves    int   `yaml:"keep_saves" json:"keepSaves"`
+	MaxMBPerGame int64 `yaml:"max_mb_per_game" json:"maxMBPerGame"`
 }
 
 // CompactionConfig stores configuration for how to handle backups when they enter a state for compaction
@@ -53,6 +53,7 @@ type ActiveRule struct {
 
 // BackupMetadata stores the metadata for a backed up savefile
 type BackupMetadata struct {
+	FileSize     int64     `json:"fileSize" yaml:"-"`
 	Filename     string    `json:"filename" yaml:"-"`
 	Source       string    `yaml:"source" json:"source"`
 	BackupTime   time.Time `yaml:"backup_time" json:"backupTime"`

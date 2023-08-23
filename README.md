@@ -27,7 +27,7 @@ The software is currently in an early stage.
 - It can make backups based on rules
 - It can maybe restore backups without data loss
 - It can read the config
-- It supports the `backups.keep_saves` option
+- It supports the `backups.keep_saves` and `backups.max_mb_per_game` options
 - It does not support any of the other configuration options
 - There is no way to configure the application from the GUI
 - There has been very little testing in general

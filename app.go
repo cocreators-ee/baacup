@@ -25,8 +25,8 @@ func newConfig() *Config {
 	return &Config{
 		DisabledRules: []string{},
 		Backups: &BackupConfig{
-			KeepSaves:    50,
-			MaxMBPerGame: 500,
+			KeepSaves:    250,
+			MaxMBPerGame: 1024,
 		},
 		Compaction: &CompactionConfig{
 			KeepSaves:        5,
@@ -81,6 +81,12 @@ func (a *App) LoadConfig() {
 	a.Config = newConfig()
 	configPath := a.getConfigPath()
 	contents, err := os.ReadFile(configPath)
+
+	// Ensure we get a path separator always
+	defer func() {
+		a.Config.PathSeparator = a.GetPathSeparator()
+	}()
+
 	if err != nil {
 		if os.IsNotExist(err) {
 			// No configuration file exists yet, make sure we save the defaults
@@ -96,8 +102,6 @@ func (a *App) LoadConfig() {
 		a.ReportError(err)
 		a.ReportError(fmt.Errorf("error parsing config from %s", configPath))
 	}
-
-	a.Config.PathSeparator = a.GetPathSeparator()
 
 	wailsRuntime.EventsEmit(a.ctx, "configUpdated", a.Config)
 }
@@ -326,22 +330,44 @@ func (a *App) backupFile(ruleFilename string, sourcePath string) {
 	// Now that we've successfully backed it up, load the metadata in memory
 	a.Backups[ruleFilename] = append(a.Backups[ruleFilename], meta)
 
-	// Then limit it to max length
-	if len(a.Backups[ruleFilename]) > a.Config.Backups.KeepSaves {
-		sort.SliceStable(a.Backups[ruleFilename], func(li, ri int) bool {
-			l := a.Backups[ruleFilename][li]
-			r := a.Backups[ruleFilename][ri]
-			return l.BackupTime.After(r.BackupTime)
-		})
+	a.limitBackupSize(ruleFilename)
 
+	wailsRuntime.EventsEmit(a.ctx, "backupsUpdated", a.Backups)
+	a.AddEvent(fmt.Sprintf("Backed up %s savegame %s", rule.Name, filepath.Base(sourcePath)))
+}
+
+func (a *App) limitBackupSize(ruleFilename string) {
+	// Sort
+	sort.SliceStable(a.Backups[ruleFilename], func(li, ri int) bool {
+		l := a.Backups[ruleFilename][li]
+		r := a.Backups[ruleFilename][ri]
+		return l.BackupTime.After(r.BackupTime)
+	})
+
+	// Limit backups to max length
+	reported := false
+	if len(a.Backups[ruleFilename]) > a.Config.Backups.KeepSaves {
 		extra := a.Backups[ruleFilename][a.Config.Backups.KeepSaves:]
 		for _, meta := range extra {
 			a.DeleteBackup(ruleFilename, meta.Filename)
 		}
 	}
 
-	wailsRuntime.EventsEmit(a.ctx, "backupsUpdated", a.Backups)
-	a.AddEvent(fmt.Sprintf("Backed up %s savegame %s", rule.Name, filepath.Base(sourcePath)))
+	// Manage max size
+	maxBytes := a.Config.Backups.MaxMBPerGame * 1024 * 1024
+	var currentBytes int64 = 0
+	reported = false
+	for _, meta := range a.Backups[ruleFilename] {
+		currentBytes += meta.FileSize
+
+		if currentBytes > maxBytes {
+			if !reported {
+				a.AddEvent(fmt.Sprintf("%s exceeded max size of backups (%d > %d), deleting old backups...", a.Rules[ruleFilename].Name, currentBytes, maxBytes))
+				reported = true
+			}
+			a.DeleteBackup(ruleFilename, meta.Filename)
+		}
+	}
 }
 
 // DeleteBackup deletes a specific backup
@@ -610,10 +636,21 @@ func (a *App) findBackupMetadata(ruleFilename string) []BackupMetadata {
 		backupFilename := fmt.Sprintf("%s%s", base, ext)
 		meta.Filename = backupFilename
 
+		backupFilePath := filepath.Join(backupPath, meta.Filename)
+		meta.FileSize = getFileSize(backupFilePath)
+
 		backups = append(backups, meta)
 	}
 
 	return backups
+}
+
+func getFileSize(filePath string) int64 {
+	f, err := os.Stat(filePath)
+	if err != nil {
+		return 0
+	}
+	return f.Size()
 }
 
 func (a *App) findBackupMetadataForRestore(ruleFilename string, filename string) BackupMetadata {
@@ -651,6 +688,7 @@ func (a *App) AddEvent(msg string) {
 
 	a.Events = events[:last]
 	wailsRuntime.EventsEmit(a.ctx, "eventsUpdated", a.Events)
+	wailsRuntime.LogPrint(a.ctx, msg)
 }
 
 // ReportError reports an error to the UI
@@ -664,6 +702,7 @@ func (a *App) ReportError(err error) {
 
 	a.Errors = errors[:last]
 	wailsRuntime.EventsEmit(a.ctx, "errorsUpdated", a.Errors)
+	wailsRuntime.LogError(a.ctx, err.Error())
 }
 
 // GetRules returns the rules currently loaded
